@@ -176,11 +176,13 @@ const MovieDetail = (props) => {
             <ListGroup className='list-group-flush'>
               <ListGroup.Item>Comments:</ListGroup.Item>
               {console.log(comments)}
-              {comments.length > 0
-                ? comments.map((comment) => (
-                    <ListGroup.Item key={comment.elementId}>{comment.comment + " - " + comment.rate}</ListGroup.Item>
-                  ))
-                : console.log("Array vuoto")}
+              {comments.length > 0 ? (
+                comments.map((comment) => (
+                  <ListGroup.Item key={comment.elementId}>{comment.comment + " - " + comment.rate}</ListGroup.Item>
+                ))
+              ) : (
+                <ListGroup.Item>Nessun commento disponibile.</ListGroup.Item>
+              )}
             </ListGroup>
           </Card>
         </Col>
