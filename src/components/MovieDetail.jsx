@@ -3,12 +3,14 @@ import { Alert, Col, Row, Spinner } from "react-bootstrap"
 import { useParams } from "react-router-dom"
 import Card from "react-bootstrap/Card"
 import ListGroup from "react-bootstrap/ListGroup"
+const URL_STRIVE = "https://striveschool-api.herokuapp.com/api/comments/"
 
 const MovieDetail = (props) => {
   const [isError, setIsError] = useState(false)
   const [errorMsg, setErrorMsg] = useState("")
   const [isLoading, setIsLoading] = useState(true)
   const [film, setFilm] = useState(null)
+  const [comments, setComments] = useState([])
   const params = useParams()
 
   const fetchFilms = (filmId) => {
@@ -76,6 +78,75 @@ const MovieDetail = (props) => {
       })
   }
 
+  const fetchComments = (movieId) => {
+    fetch(URL_STRIVE + movieId, {
+      headers: {
+        Authorization:
+          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NjE4ZTJmMjdmMzA0NjAwMWFlNTlmNWEiLCJpYXQiOjE3MTQ2NjA2MzgsImV4cCI6MTcxNTg3MDIzOH0.tVg0g_aMHn1eueTxrbON7lKp492wfFEcgirXRsaaQJU",
+      },
+    })
+      .then((response) => {
+        if (response.ok) {
+          return response.json()
+        } else {
+          if (response.status === 400) {
+            throw new Error("400: Bad Request")
+          }
+          if (response.status === 401) {
+            throw new Error("401: Unauthorized")
+          }
+          if (response.status === 402) {
+            throw new Error("402: Payment Required")
+          }
+          if (response.status === 403) {
+            throw new Error("403: Forbidden")
+          }
+          if (response.status === 404) {
+            throw new Error("404: Not Found")
+          }
+          if (response.status === 405) {
+            throw new Error("405: Method Not Allowed")
+          }
+          if (response.status === 406) {
+            throw new Error("406: Not Acceptable")
+          }
+          if (response.status === 407) {
+            throw new Error("407: Proxy Authentication Required")
+          }
+          if (response.status === 408) {
+            throw new Error("408: Request Timeout")
+          }
+          if (response.status === 500) {
+            throw new Error("500: Server Error")
+          }
+
+          throw new Error("Generic Fetch Error")
+        }
+      })
+      .then((data) => {
+        // Controllo per verificare se la ricerca restituisca un risultato
+        if (!data) {
+          // Se la ricerca non pruduce nessun risultiamo settiamo lo stato isError = true
+          // e lanciamo un errore per indicare che il film in questione non è stato trovato
+          setIsError(true)
+          throw new Error("No film finded")
+        } else {
+          setComments(data)
+        }
+      })
+      .catch((err) => {
+        // In caso di errore settiamo lo stato isError = true
+        // ed utilizziamo il messaggio di errore ricevuto settandolo allo stato errorMsg
+        setErrorMsg(err.name + " : " + err.message)
+        setIsError(true)
+      })
+      .finally(() => {
+        // In ogni caso (sia che abbiamo ricevuto un errore o meno) settiamo
+        // isLoading che di default è true a false per disattivare lo spinner
+        setIsLoading(false)
+      })
+  }
+
   // Funzione per istanziare gli Alert di errore
   const createAlert = (errorMsg) => {
     return (
@@ -102,6 +173,15 @@ const MovieDetail = (props) => {
               <ListGroup.Item>{film.Genre}</ListGroup.Item>
               <ListGroup.Item>{film.Director}</ListGroup.Item>
             </ListGroup>
+            <ListGroup className='list-group-flush'>
+              <ListGroup.Item>Comments:</ListGroup.Item>
+              {console.log(comments)}
+              {comments.length > 0
+                ? comments.map((comment) => (
+                    <ListGroup.Item key={comment.elementId}>{comment.comment + " - " + comment.rate}</ListGroup.Item>
+                  ))
+                : console.log("Array vuoto")}
+            </ListGroup>
           </Card>
         </Col>
       </Row>
@@ -110,6 +190,7 @@ const MovieDetail = (props) => {
 
   useEffect(() => {
     fetchFilms(params.movieId)
+    fetchComments(params.movieId)
   }, [])
 
   return (
