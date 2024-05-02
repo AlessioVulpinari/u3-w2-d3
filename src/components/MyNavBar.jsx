@@ -2,6 +2,7 @@ import Container from "react-bootstrap/Container"
 import Nav from "react-bootstrap/Nav"
 import Navbar from "react-bootstrap/Navbar"
 import logo from "../assets/logo.png"
+import { NavLink } from "react-router-dom"
 
 const MyNavBar = () => {
   return (
@@ -13,11 +14,18 @@ const MyNavBar = () => {
         <Navbar.Toggle aria-controls='basic-navbar-nav' />
         <Navbar.Collapse id='basic-navbar-nav'>
           <Nav className='me-auto'>
-            <Nav.Link href='#home'>Home</Nav.Link>
-            <Nav.Link href='#link'>Tv Shows</Nav.Link>
-            <Nav.Link href='#link'>Movies</Nav.Link>
-            <Nav.Link href='#link'>Recently Added</Nav.Link>
-            <Nav.Link href='#link'>My List</Nav.Link>
+            <NavLink to='/' className={"nav-link"}>
+              Home
+            </NavLink>
+            <NavLink to='/tv-shows' className={"nav-link"}>
+              Tv Shows
+            </NavLink>
+            <NavLink to='/profile' className={"nav-link"}>
+              Profile
+            </NavLink>
+            <NavLink to='/settings' className={"nav-link"}>
+              Settings
+            </NavLink>
           </Nav>
           <div className='d-flex align-items-center'>
             <i className='bi bi-search icons'></i>

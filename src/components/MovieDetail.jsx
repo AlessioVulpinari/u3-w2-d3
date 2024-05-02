@@ -1,26 +1,18 @@
 import { useEffect, useState } from "react"
-import { Image } from "react-bootstrap"
-import Alert from "react-bootstrap/Alert"
-import Spinner from "react-bootstrap/Spinner"
-import { useNavigate } from "react-router-dom"
+import { Alert, Col, Row, Spinner } from "react-bootstrap"
+import { useParams } from "react-router-dom"
+import Card from "react-bootstrap/Card"
+import ListGroup from "react-bootstrap/ListGroup"
 
-const Gallery = (props) => {
-  // STATI: arrayOfFilmsObj = la raccolta dei film restituiti dalla fetch
-  // isError = valore booleano per indicare se si è verificato un errore
-  // errorMsg = testo dell'errore (valore string)
-  // isLoading = valore booleano per indicare se la pagina è ancora in attesa della fetch
-  // state = { arrayOfFilmsObj: [], isError: false, errorMsg: "", isLoading: true }
-
-  const [arrayOfFilmsObj, setArrayOfFilmsObj] = useState([])
+const MovieDetail = (props) => {
   const [isError, setIsError] = useState(false)
   const [errorMsg, setErrorMsg] = useState("")
   const [isLoading, setIsLoading] = useState(true)
-  const navigate = useNavigate()
+  const [film, setFilm] = useState(null)
+  const params = useParams()
 
-  // FUNZIONE PRINCIPALE: prende come parametro il nome di un film e ne fa la relativa fetch
-  // sull'API fornita
-  const fetchFilms = (filmName) => {
-    fetch(`http://www.omdbapi.com/?i=tt3896198&apikey=9d8765b4&s=${filmName}`)
+  const fetchFilms = (filmId) => {
+    fetch(`http://www.omdbapi.com/?apikey=9d8765b4&s&i=${filmId}`)
       .then((response) => {
         if (response.ok) {
           return response.json()
@@ -61,16 +53,14 @@ const Gallery = (props) => {
       })
       .then((data) => {
         // Controllo per verificare se la ricerca restituisca un risultato
-        if (!data.Search) {
+        if (!data) {
           // Se la ricerca non pruduce nessun risultiamo settiamo lo stato isError = true
           // e lanciamo un errore per indicare che il film in questione non è stato trovato
           setIsError(true)
           throw new Error("No film finded")
         } else {
-          // altrimenti prendiamo solo i primi 6 valori dell'array e li inseriamo
-          // nello stato arrayOfFilmsObj
-          const arrayOfFilmsObj = data.Search.splice(0, 6)
-          setArrayOfFilmsObj(arrayOfFilmsObj)
+          console.log(data)
+          setFilm(data)
         }
       })
       .catch((err) => {
@@ -86,16 +76,6 @@ const Gallery = (props) => {
       })
   }
 
-  // funzione per creare i col che contego i poster delle copertine
-  const createCardImg = () =>
-    arrayOfFilmsObj.map((film) => {
-      return (
-        <div className='col mb-2 text-center px-1' key={film.imdbID} onClick={() => navigate(`/movie-detail/${film.imdbID}`)}>
-          <Image className='img-fluid' src={film.Poster} alt={film.Title} />
-        </div>
-      )
-    })
-
   // Funzione per istanziare gli Alert di errore
   const createAlert = (errorMsg) => {
     return (
@@ -106,28 +86,45 @@ const Gallery = (props) => {
     )
   }
 
+  const createCard = () => {
+    return (
+      <Row className='d-flex align-items-center justify-content-center'>
+        <Col xs={12} sm={10} md={8} xl={6}>
+          <Card>
+            <Card.Img variant='top' className='img-fluid' src={film.Poster} />
+            <Card.Body>
+              <Card.Title>{film.Title}</Card.Title>
+              <Card.Text>{film.Plot}</Card.Text>
+            </Card.Body>
+            <ListGroup className='list-group-flush'>
+              <ListGroup.Item>{film.Released}</ListGroup.Item>
+              <ListGroup.Item>{film.Runtime}</ListGroup.Item>
+              <ListGroup.Item>{film.Genre}</ListGroup.Item>
+              <ListGroup.Item>{film.Director}</ListGroup.Item>
+            </ListGroup>
+          </Card>
+        </Col>
+      </Row>
+    )
+  }
+
   useEffect(() => {
-    fetchFilms(props.film)
+    fetchFilms(params.movieId)
   }, [])
 
   return (
     <>
-      {/* Controlliamo se la pagina sta caricando e se la fetch non ha restituito un codice di errore */}
       {isLoading && !isError ? (
-        // in questo caso istanziamo lo spinner per il caricamento
         <Spinner animation='border' role='status' variant='light' className='mx-auto'>
           <span className='visually-hidden'>Loading...</span>
         </Spinner>
       ) : (
         console.log("Ciao")
       )}
-      {/* Se la fetch ha restituito un errore chiamiamo la funzione per istanziare un alert in caso contrario facciamo un console log */}
       {isError ? createAlert(errorMsg) : console.log("Nessun errore")}
-      {/* Se l'array di oggetti contiene almeno un film e se la fetch non ha restituito un errore istanziamo le col contenenti le foto dei poster
-        tramite la funzione createCardImg, altrimenti restituiamo un console log */}
-      {arrayOfFilmsObj.length > 0 && !isError ? createCardImg() : console.log("Img ancora non disponibili")}
+      {!isError && !isLoading && film !== null ? createCard() : console.log("Errore")}
     </>
   )
 }
 
-export default Gallery
+export default MovieDetail

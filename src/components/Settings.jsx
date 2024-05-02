@@ -1,3 +1,4 @@
+import "../Settings.css"
 import { Button, Col, Container, Row } from "react-bootstrap"
 import avatar from "../assets/avatar.png"
 
