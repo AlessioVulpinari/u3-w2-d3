@@ -1,0 +1,23 @@
+main > .container > div > .image-container img {
+  width: 72.5px;
+  height: 74px;
+}
+
+@media screen and (min-width: 576px) {
+  main > .container > div > .image-container img {
+    width: 145px;
+    height: 148px;
+  }
+}
+
+@media screen and (min-width: 992px) {
+  main > .container {
+    max-width: 60%;
+  }
+}
+
+@media screen and (min-width: 1200px) {
+  main > .container {
+    max-width: 50%;
+  }
+}

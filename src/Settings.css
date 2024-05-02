@@ -1,0 +1,16 @@
+* *::after,
+*::before {
+  box-sizing: border-box;
+}
+
+.width-300 {
+  width: 150px;
+  margin-inline-end: 0.5rem;
+}
+
+@media screen and (min-width: 992px) {
+  .width-300 {
+    width: 300px;
+    margin-inline-end: 0px;
+  }
+}
