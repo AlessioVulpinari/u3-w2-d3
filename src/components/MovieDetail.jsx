@@ -61,7 +61,6 @@ const MovieDetail = (props) => {
           setIsError(true)
           throw new Error("No film finded")
         } else {
-          console.log(data)
           setFilm(data)
         }
       })
@@ -175,7 +174,6 @@ const MovieDetail = (props) => {
             </ListGroup>
             <ListGroup className='list-group-flush'>
               <ListGroup.Item>Comments:</ListGroup.Item>
-              {console.log(comments)}
               {comments.length > 0 ? (
                 comments.map((comment) => (
                   <ListGroup.Item key={comment.elementId}>{comment.comment + " - " + comment.rate}</ListGroup.Item>
@@ -202,7 +200,7 @@ const MovieDetail = (props) => {
           <span className='visually-hidden'>Loading...</span>
         </Spinner>
       ) : (
-        console.log("Ciao")
+        console.log("Caricamento completato!")
       )}
       {isError ? createAlert(errorMsg) : console.log("Nessun errore")}
       {!isError && !isLoading && film !== null ? createCard() : console.log("Errore")}
